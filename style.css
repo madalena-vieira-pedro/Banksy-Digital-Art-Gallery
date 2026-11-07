@@ -1,3 +1,44 @@
+/* ---------- Fontes (ficheiros na pasta "fonts", ao lado do index.html) ---------- */
+@font-face {
+  font-family: "Abril Fatface";
+  src: url("fonts/AbrilFatface-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agdasima";
+  src: url("fonts/Agdasima-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agdasima";
+  src: url("fonts/Agdasima-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Afacad";
+  src: url("fonts/Afacad-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Permanent Marker";
+  src: url("fonts/PermanentMarker-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ---------- Base ---------- */
 *,
 *::before,
@@ -219,21 +260,24 @@ body:has(#work:target)::before {
   color: var(--white);
 }
 
-/* ---------- Página About ---------- */
-/* Contorno: 1339 de largura, sem fill, altura conforme o texto */
+/* ---------- Página About (3 pastas de arquivo) ---------- */
+/* Contorno: 1339 de largura, sem fill, com o título e as pastas ao centro */
 .about__frame {
-  display: grid;
-  grid-template-columns: minmax(0, 906px) 1fr;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 56px;
   width: 100%;
   max-width: 1339px;
+  min-height: 596px;
   padding: 48px;
   border: 1px solid var(--black);
   border-radius: var(--radius);
+  text-align: center;
 }
 
 .about__title {
-  margin-bottom: 24px;
   font-family: "Abril Fatface", serif;
   font-weight: 400;
   font-size: clamp(36px, 4.23vw, 64px);
@@ -241,21 +285,149 @@ body:has(#work:target)::before {
   color: var(--black);
 }
 
-.about__text p {
+/* Pastas fechadas */
+.folders {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px clamp(24px, 4.5vw, 72px);
+  list-style: none;
+}
+
+.folder {
+  --fw: clamp(190px, 21vw, 300px);
+  --folder: #efdcae;
+  --folder-dark: #d6bb82;
+  --folder-line: rgba(120, 92, 36, 0.4);
+  --ink-red: #c42b1c;
+  position: relative;
+  display: block;
+  width: var(--fw);
+  aspect-ratio: 1 / 0.9;
+  padding: 0;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.22));
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+/* Ao passar o cursor: leve zoom */
+.folder:hover,
+.folder:focus-visible {
+  transform: scale(1.06);
+  filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.28));
+}
+
+/* Quando está aberta, a pasta fica vazia (a folha saiu dela) */
+.folder.is-open {
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+}
+
+.folder__back {
+  position: absolute;
+  inset: 14% 0 0 0;
+  background: var(--folder-dark);
+  border: 1px solid var(--folder-line);
+  border-radius: 0 12px 12px 12px;
+}
+
+/* Aba da pasta */
+.folder__flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44%;
+  height: 22%;
+  background: var(--folder-dark);
+  border: 1px solid var(--folder-line);
+  border-bottom: 0;
+  border-radius: 12px 28px 0 0;
+}
+
+/* Folha branca que espreita por trás */
+.folder__paper {
+  position: absolute;
+  top: 20%;
+  left: 5%;
+  right: 5%;
+  height: 55%;
+  background: #fbf8ef;
+  border-radius: 5px;
+  transition: transform 0.25s ease;
+}
+
+.folder:hover .folder__paper,
+.folder:focus-visible .folder__paper {
+  transform: translateY(-7%);
+}
+
+.folder__front {
+  position: absolute;
+  top: 32%;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--folder);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.04));
+  border: 1px solid var(--folder-line);
+  border-radius: 12px;
+}
+
+/* Carimbo vermelho */
+.stamp {
+  display: inline-block;
+  padding: 1px 12px 0;
+  font-family: "Agdasima", sans-serif;
+  font-weight: 700;
+  font-size: clamp(24px, 2.5vw, 34px);
+  line-height: 1.25;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-red, #c42b1c);
+  border: 3px solid var(--ink-red, #c42b1c);
+  border-radius: 6px;
+  opacity: 0.85;
+  transform: rotate(var(--stamp-rot, 0deg));
+  mix-blend-mode: multiply;
+  filter: url(#stamp-rough);
+}
+
+/* Folha aberta */
+.folder-sheet {
+  --note: #fbf8ef;
+  --ink-red: #c42b1c;
+  width: min(640px, 100%);
+  padding-top: 40px;
+}
+
+.folder-sheet__stamp {
+  margin-bottom: 22px;
+  padding-right: 48px;
+}
+
+.folder-sheet .stamp {
+  font-size: 34px;
+}
+
+.folder-sheet p {
   font-family: "Afacad", sans-serif;
-  font-size: clamp(20px, 2.12vw, 32px);
+  font-size: clamp(20px, 4.6vw, 32px);
   line-height: 1.25;
   color: var(--black);
 }
 
-.about__text p + p {
-  margin-top: 1.25em;
-}
-
-.about__icon {
-  justify-self: center;
-  width: clamp(120px, 15vw, 228px);
-  height: auto;
+@media (prefers-reduced-motion: reduce) {
+  .folder,
+  .folder__paper {
+    transition: none;
+  }
 }
 
 /* ---------- Página Work (galeria) ---------- */
@@ -834,9 +1006,9 @@ html.has-note-open {
   }
 
   .about__frame {
-    grid-template-columns: 1fr;
-    gap: 32px;
-    padding: 24px;
+    gap: 36px;
+    min-height: 0;
+    padding: 36px 24px;
   }
 
   .painting {
@@ -971,13 +1143,29 @@ html.has-note-open {
     letter-spacing: 0.05em;
   }
 
-  /* About */
+  /* About: pastas uma por baixo da outra */
   .about__title {
     font-size: 32px;
   }
 
-  .about__text p {
-    font-size: 19px;
+  .folders {
+    gap: 28px;
+  }
+
+  .folder {
+    --fw: min(64vw, 250px);
+  }
+
+  .stamp {
+    font-size: 26px;
+  }
+
+  .folder-sheet {
+    padding: 36px 22px 24px;
+  }
+
+  .folder-sheet .stamp {
+    font-size: 26px;
   }
 
   /* Galeria: 1 quadro de cada vez, setas por baixo */

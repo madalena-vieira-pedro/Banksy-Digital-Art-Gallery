@@ -5,13 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The World of Banksy</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Afacad:wght@400;500&family=Agdasima:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <!-- Filtro do efeito de carimbo (tinta irregular) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="stamp-rough" x="-5%" y="-10%" width="110%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="4" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6"/>
+    </filter>
+  </svg>
 
   <header class="navbar">
     <a href="#" class="navbar__logo" id="logo">
@@ -41,20 +46,60 @@
   <!-- PÁGINA 2: about (aparece quando o endereço termina em #about) -->
   <main class="hero page subpage" id="about">
     <section class="about__frame">
-      <div class="about__text">
-        <h1 class="about__title">Banksy: The Anonymous Artist</h1>
+      <h1 class="about__title">Banksy: The Anonymous Artist</h1>
 
-        <p>Banksy is an anonymous British street artist known for his distinctive stencil technique and provocative visual messages. His work combines humour, irony and social criticism to explore themes such as war, politics, consumerism, surveillance and inequality.</p>
-
-        <p>Emerging from the Bristol graffiti scene, Banksy became internationally recognised for transforming public spaces into platforms for artistic expression and social commentary. His work can be found in murals, prints, installations and other artistic formats.</p>
-
-        <p>Although his identity remains publicly unconfirmed, his work has become one of the most recognisable forms of contemporary street art.</p>
-      </div>
-
-      <!-- Substitui pelo ficheiro do ícone (hat and glasses) -->
-      <img src="images/anonymous-icon.png" alt="" class="about__icon" id="anonymous-icon">
+      <!-- 3 pastas de arquivo fechadas: ao clicar, abre uma folha com o texto -->
+      <ul class="folders">
+      <li class="folders__item">
+        <button class="folder" type="button" aria-haspopup="dialog">
+          <span class="folder__back" aria-hidden="true"></span>
+          <span class="folder__flap" aria-hidden="true"></span>
+          <span class="folder__paper" aria-hidden="true"></span>
+          <span class="folder__front"><span class="stamp" style="--stamp-rot: -3deg;">Who</span></span>
+        </button>
+        <template>
+          <h2 class="folder-sheet__stamp" id="folder-card-title"><span class="stamp" style="--stamp-rot: -3deg;">Who</span></h2>
+          <p>Banksy is an anonymous British street artist known for his distinctive stencil technique and provocative visual messages. His work combines humour, irony and social criticism to explore themes such as war, politics, consumerism, surveillance and inequality.</p>
+        </template>
+      </li>
+      <li class="folders__item">
+        <button class="folder" type="button" aria-haspopup="dialog">
+          <span class="folder__back" aria-hidden="true"></span>
+          <span class="folder__flap" aria-hidden="true"></span>
+          <span class="folder__paper" aria-hidden="true"></span>
+          <span class="folder__front"><span class="stamp" style="--stamp-rot: 2deg;">Origins</span></span>
+        </button>
+        <template>
+          <h2 class="folder-sheet__stamp" id="folder-card-title"><span class="stamp" style="--stamp-rot: 2deg;">Origins</span></h2>
+          <p>Emerging from the Bristol graffiti scene, Banksy became internationally recognised for transforming public spaces into platforms for artistic expression and social commentary. His work can be found in murals, prints, installations and other artistic formats.</p>
+        </template>
+      </li>
+      <li class="folders__item">
+        <button class="folder" type="button" aria-haspopup="dialog">
+          <span class="folder__back" aria-hidden="true"></span>
+          <span class="folder__flap" aria-hidden="true"></span>
+          <span class="folder__paper" aria-hidden="true"></span>
+          <span class="folder__front"><span class="stamp" style="--stamp-rot: -2deg;">Identity</span></span>
+        </button>
+        <template>
+          <h2 class="folder-sheet__stamp" id="folder-card-title"><span class="stamp" style="--stamp-rot: -2deg;">Identity</span></h2>
+          <p>Although his identity remains publicly unconfirmed, his work has become one of the most recognisable forms of contemporary street art.</p>
+        </template>
+      </li>
+      </ul>
     </section>
   </main>
+
+  <!-- Folha aberta de uma pasta (preenchida pelo script.js com o texto da pasta clicada) -->
+  <div class="note-modal" id="folder-modal" hidden>
+    <div class="note-modal__backdrop"></div>
+    <div class="note-card folder-sheet" role="dialog" aria-modal="true" aria-labelledby="folder-card-title" tabindex="-1">
+      <button class="note-card__close" type="button" aria-label="Close" data-close>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="note-card__body" id="folder-card-body"></div>
+    </div>
+  </div>
 
   <!-- PÁGINA 3: work / galeria (aparece quando o endereço termina em #work) -->
   <main class="work page subpage" id="work">

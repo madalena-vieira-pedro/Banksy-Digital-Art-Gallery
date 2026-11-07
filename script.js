@@ -236,3 +236,114 @@ if (noteModal) {
     if (current) reset(current);
   });
 }
+
+/* ---------- About: pastas ---------- */
+const folderModal = document.getElementById("folder-modal");
+
+if (folderModal) {
+  const sheet = folderModal.querySelector(".note-card");
+  const sheetBody = document.getElementById("folder-card-body");
+  const sheetClose = folderModal.querySelector("[data-close]");
+  const reduceMotionFolders = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  let openFolder = null;   // pasta que está aberta
+  let busy = false;
+
+  // Transformação que põe a folha exatamente por cima da pasta (de onde "sai")
+  function fromFolderTransform(folderEl) {
+    const from = folderEl.getBoundingClientRect();
+    const to = sheet.getBoundingClientRect();
+    const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+    const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+    const scale = from.width / sheet.offsetWidth;
+    return `translate(${dx}px, ${dy}px) scale(${scale})`;
+  }
+
+  function resetFolder(folderEl) {
+    sheet.getAnimations().forEach((a) => a.cancel());
+    sheetBody.getAnimations().forEach((a) => a.cancel());
+    folderModal.classList.remove("is-open");
+    folderModal.hidden = true;
+    document.documentElement.classList.remove("has-note-open");
+    folderEl.classList.remove("is-open");
+    openFolder = null;
+    busy = false;
+  }
+
+  function showFolder(folderEl) {
+    if (openFolder || busy) return;
+    openFolder = folderEl;
+
+    // O texto da pasta está num <template> ao lado do botão
+    const template = folderEl.closest(".folders__item").querySelector("template");
+    sheetBody.replaceChildren(template.content.cloneNode(true));
+
+    folderModal.hidden = false;
+    document.documentElement.classList.add("has-note-open");
+
+    if (!reduceMotionFolders.matches) {
+      busy = true;
+      sheet
+        .animate(
+          [{ transform: fromFolderTransform(folderEl), opacity: 0.3 }, { transform: "none", opacity: 1 }],
+          { duration: 480, easing: "cubic-bezier(0.2, 0.8, 0.25, 1)" }
+        )
+        .finished.then(() => { busy = false; }, () => { busy = false; });
+      sheetBody.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 180, fill: "backwards" });
+    }
+
+    folderEl.classList.add("is-open");
+    folderModal.classList.add("is-open");
+    sheetClose.focus({ preventScroll: true });
+  }
+
+  function hideFolder() {
+    if (!openFolder || busy) return;
+    const folderEl = openFolder;
+
+    const finish = () => {
+      resetFolder(folderEl);
+      folderEl.focus({ preventScroll: true });
+    };
+
+    if (reduceMotionFolders.matches) {
+      finish();
+      return;
+    }
+
+    busy = true;
+    folderModal.classList.remove("is-open");
+    sheetBody.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: "forwards" });
+    sheet
+      .animate([{ transform: "none", opacity: 1 }, { transform: fromFolderTransform(folderEl), opacity: 0.3 }], {
+        duration: 380,
+        easing: "cubic-bezier(0.5, 0, 0.75, 0)",
+        fill: "forwards",
+      })
+      .finished.then(finish, finish);
+  }
+
+  document.querySelectorAll(".folder").forEach((folderEl) => {
+    folderEl.addEventListener("click", () => showFolder(folderEl));
+  });
+
+  // Clicar fora da folha (ou no X) fecha a pasta
+  folderModal.addEventListener("click", (e) => {
+    if (!e.target.closest(".note-card") || e.target.closest("[data-close]")) hideFolder();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (!openFolder) return;
+    if (e.key === "Escape") hideFolder();
+    if (e.key === "Tab") {
+      // Mantém o teclado dentro da folha aberta
+      e.preventDefault();
+      sheetClose.focus();
+    }
+  });
+
+  // Se o utilizador mudar de página (botão "voltar" do browser), fecha logo
+  window.addEventListener("hashchange", () => {
+    if (openFolder) resetFolder(openFolder);
+  });
+}
